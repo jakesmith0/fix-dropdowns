@@ -4,9 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fix Dropdowns — demo and install</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <style>
     :root{font-family:system-ui,-apple-system,sans-serif;color:#17212b;background:#f6f8fa}body{max-width:800px;margin:40px auto;padding:0 18px}h1{margin-bottom:4px}p{line-height:1.5}.card{background:white;border:1px solid #d9e1e8;border-radius:12px;padding:20px;margin:20px 0}.bookmarklet{display:inline-block;padding:12px 18px;background:#155eef;color:white;text-decoration:none;border-radius:8px;font-weight:700}.bookmarklet:focus,.bookmarklet:hover{background:#0045c0}label{display:block;font-weight:600;margin:16px 0 6px}select{display:block;width:100%;max-width:500px;padding:9px;border:1px solid #8e9ba5;border-radius:7px;background:white;font:inherit}code{background:#eef2f5;padding:2px 4px;border-radius:3px}#events{min-height:100px;max-height:180px;overflow:auto;background:#f1f5f8;padding:10px;border-radius:6px;font:12px/1.5 ui-monospace,monospace}small{color:#53616e}
     button{font:inherit;cursor:pointer;padding:9px 12px;border:1px solid #a6b5c3;border-radius:7px;background:#f4f7fa;color:inherit}.badge{font-size:12px;padding:4px 7px;border-radius:4px;background:#e4f4e9;color:#176035}.limited{background:#fff0d3;color:#785000}.native-hidden{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.custom-options{max-height:160px;overflow:auto;border:1px solid #d9e1e8;border-radius:8px;padding:6px;margin-top:8px}.custom-options button{display:block;border:0;background:white;width:100%;text-align:left}.custom-options button:hover{background:#e7f0ff}.checks{padding:12px;border-radius:8px;background:#f1f5f8;line-height:1.7}.case-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.case-title h2{margin:0}summary{cursor:pointer}#checks-status{margin-top:10px}
+  </style>
+  <style>
+    select,fieldset{box-sizing:border-box}
+    fieldset{min-width:0;width:100%;max-width:500px;margin:18px 0 0;padding:0;border:0}
+    legend{padding:0;color:#53616e;font-size:12px}
+    fieldset label{margin-top:6px}
   </style>
 </head>
 <body>
@@ -15,7 +22,7 @@
   <div class="card">
     <h2>Install</h2>
     <p><strong>Desktop:</strong> show your bookmarks bar, then drag this button onto it:</p>
-    <p><a id="install" class="bookmarklet" href="{{BOOKMARKLET}}" draggable="true" title="Drag to your bookmarks bar">🔎 Fix Dropdowns v1.1</a></p>
+    <p><a id="install" class="bookmarklet" href="{{BOOKMARKLET}}" draggable="true" title="Drag to your bookmarks bar">Dropdowns</a> <small>v1.1</small></p>
     <p>Then visit a page with a large native dropdown and click the bookmark. You can also <a href="{{BOOKMARKLET}}">try it on this page now</a>.</p>
     <p><small>On iPad Safari, dragging to a bookmarks bar is awkward. See the README for manual setup. Some websites or browser policies can block bookmarklets.</small></p>
   </div>
