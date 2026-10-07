@@ -6,21 +6,22 @@
   <title>Fix Dropdowns — demo and install</title>
   <style>
     :root{font-family:system-ui,-apple-system,sans-serif;color:#17212b;background:#f6f8fa}body{max-width:800px;margin:40px auto;padding:0 18px}h1{margin-bottom:4px}p{line-height:1.5}.card{background:white;border:1px solid #d9e1e8;border-radius:12px;padding:20px;margin:20px 0}.bookmarklet{display:inline-block;padding:12px 18px;background:#155eef;color:white;text-decoration:none;border-radius:8px;font-weight:700}.bookmarklet:focus,.bookmarklet:hover{background:#0045c0}label{display:block;font-weight:600;margin:16px 0 6px}select{display:block;width:100%;max-width:500px;padding:9px;border:1px solid #8e9ba5;border-radius:7px;background:white;font:inherit}code{background:#eef2f5;padding:2px 4px;border-radius:3px}#events{min-height:100px;max-height:180px;overflow:auto;background:#f1f5f8;padding:10px;border-radius:6px;font:12px/1.5 ui-monospace,monospace}small{color:#53616e}
+    button{font:inherit;cursor:pointer;padding:9px 12px;border:1px solid #a6b5c3;border-radius:7px;background:#f4f7fa;color:inherit}.badge{font-size:12px;padding:4px 7px;border-radius:4px;background:#e4f4e9;color:#176035}.limited{background:#fff0d3;color:#785000}.native-hidden{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.custom-options{max-height:160px;overflow:auto;border:1px solid #d9e1e8;border-radius:8px;padding:6px;margin-top:8px}.custom-options button{display:block;border:0;background:white;width:100%;text-align:left}.custom-options button:hover{background:#e7f0ff}.checks{padding:12px;border-radius:8px;background:#f1f5f8;line-height:1.7}.case-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.case-title h2{margin:0}summary{cursor:pointer}#checks-status{margin-top:10px}
   </style>
 </head>
 <body>
   <h1>Fix Dropdowns</h1>
-  <p>Search large dropdowns on any page with one bookmark. Everything runs in your browser, only when you click it.</p>
+  <p>Make one dropdown searchable at a time. Pick a field, find an option, and keep the page's original form working.</p>
   <div class="card">
     <h2>Install</h2>
     <p><strong>Desktop:</strong> show your bookmarks bar, then drag this button onto it:</p>
-    <p><a class="bookmarklet" href="{{BOOKMARKLET}}" draggable="true" title="Drag to your bookmarks bar">🔎 Fix Dropdowns</a></p>
+    <p><a id="install" class="bookmarklet" href="{{BOOKMARKLET}}" draggable="true" title="Drag to your bookmarks bar">🔎 Fix Dropdowns v1.1</a></p>
     <p>Then visit a page with a large native dropdown and click the bookmark. You can also <a href="{{BOOKMARKLET}}">try it on this page now</a>.</p>
     <p><small>On iPad Safari, dragging to a bookmarks bar is awkward. See the README for manual setup. Some websites or browser policies can block bookmarklets.</small></p>
   </div>
   <div class="card">
-    <h2>Test form</h2>
-    <p>Search “solar roof pro”, “ja 440”, or “France”. Choose a manufacturer and the product list changes. The event log confirms the native form received input and change events.</p>
+    <div class="case-title"><h2>Native & dependent dropdowns</h2><span class="badge">Supported</span></div>
+    <p>Open the bookmarklet and choose <strong>Manufacturer</strong>. Select Clenergy, then switch the panel to <strong>Product</strong> and search “solar roof pro”. Choose JA Solar to try “ja 440”. Each search stays within the field you choose.</p>
     <label for="manufacturer">Manufacturer</label>
     <select id="manufacturer" name="manufacturer"><option value="">Choose a manufacturer</option></select>
     <label for="product">Product (depends on manufacturer)</label>
@@ -31,10 +32,46 @@
     <select id="small" name="small"><option>One</option><option>Two</option><option>Three</option></select>
     <h3>Native event log</h3><div id="events" aria-live="polite"></div>
   </div>
+  <div class="card">
+    <div class="case-title"><h2>Grouped options</h2><span class="badge">Supported</span></div>
+    <p>A native dropdown with option groups, accents and unavailable options. Try “cafe”. Disabled options and disabled groups must never appear in search.</p>
+    <label for="grouped">Grouped equipment</label>
+    <select id="grouped"><option value="">Choose equipment</option></select>
+  </div>
+  <div class="card">
+    <div class="case-title"><h2>Styled custom wrapper</h2><span class="badge">Supported: native backing</span></div>
+    <p>This widget displays its own button and menu but keeps a hidden native dropdown. Picking an option in the bookmarklet must update its visible button too.</p>
+    <label for="wrapped">Warehouse</label><select id="wrapped" class="native-hidden" tabindex="-1"><option value="">Choose warehouse</option></select>
+    <button id="wrapped-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="wrapped-menu">Choose warehouse ▾</button>
+    <div id="wrapped-menu" class="custom-options" role="listbox" aria-label="Warehouse choices" hidden></div>
+  </div>
+  <div class="card">
+    <div class="case-title"><h2>Options added later</h2><span class="badge">Supported</span></div>
+    <p>With the panel open, add a dropdown containing 1,000 part numbers. It should appear in the picker. Search “ZX-0999” to find an option beyond the first visible results.</p>
+    <button id="add-dynamic" type="button">Add 1,000-part dropdown</button><div id="dynamic-container"></div>
+  </div>
+  <div class="card">
+    <div class="case-title"><h2>Pure custom widget</h2><span class="badge limited">Not supported yet</span></div>
+    <p>An ARIA menu built from buttons with no native dropdown. It works normally below, but will not appear in the bookmarklet's picker. Widgets that fetch or virtualize options need specific integration; the bookmarklet only searches choices already in native dropdowns.</p>
+    <button id="custom-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="custom-menu">Choose custom colour ▾</button>
+    <div id="custom-menu" class="custom-options" role="listbox" aria-label="Custom colours" hidden></div>
+  </div>
+  <div class="card">
+    <div class="case-title"><h2>Controls that should be skipped</h2><span class="badge limited">Intentionally ignored</span></div>
+    <p>Small lists, multiple selection and disabled controls keep their original behavior.</p>
+    <label for="multi">Multiple selection</label><select id="multi" multiple size="3"></select>
+    <fieldset disabled><legend>Disabled section</legend><label for="disabled-control">Disabled equipment</label><select id="disabled-control"></select></fieldset>
+  </div>
+  <div class="card">
+    <h2>Compatibility checks</h2>
+    <p>Run a quick check against these examples. This selects example values and opens the panel; drag it around afterward to try the movement yourself.</p>
+    <button id="run-checks" type="button">Run demo checks</button><div id="checks-status" class="checks" aria-live="polite">Checks have not run yet.</div>
+  </div>
   <p><small>Source: <a href="https://github.com/jakesmith0/fix-dropdowns">github.com/jakesmith0/fix-dropdowns</a>. No analytics, external scripts, or network calls from the bookmarklet.</small></p>
   <script>
     const manufacturers = ['Clenergy Technology Co Ltd','JA Solar Technology','Acme Solar','Bright Roof Systems',...Array.from({length:32},(_,i)=>`Example Manufacturer ${String(i+1).padStart(2,'0')}`)];
-    const countries = ['United Kingdom','France','Germany','Spain','Netherlands',...Array.from({length:55},(_,i)=>`Example Country ${String(i+1).padStart(2,'0')}`)];
+    const names = new Intl.DisplayNames(['en'], {type:'region'});
+    const countries = 'GB FR DE ES NL BE AT CH IT PT IE DK SE NO FI IS PL CZ SK HU RO BG GR HR SI RS BA ME AL MK EE LV LT UA MD TR CY MT US CA MX BR AR CL CO PE EC UY AU NZ JP KR CN TW IN ID MY SG TH VN PH ZA EG MA KE NG GH IL JO AE SA QA OM BH KW'.split(' ').map(code=>names.of(code));
     const manufacturer = document.querySelector('#manufacturer');
     const product = document.querySelector('#product');
     const country = document.querySelector('#country');
@@ -50,13 +87,45 @@
     addOptions(manufacturer,manufacturers);
     addOptions(country,countries);
     manufacturer.addEventListener('change',updateProducts);
-    for (const select of [manufacturer,product,country]) {
+    const grouped=document.querySelector('#grouped');
+    for (const category of ['Mounts','Tools']) {
+      const group=document.createElement('optgroup'); group.label=category;
+      for(let i=1;i<=20;i++) group.append(new Option(`${category} unit ${String(i).padStart(2,'0')}`,`${category}-${i}`));
+      grouped.append(group);
+    }
+    grouped.add(new Option('Café mounting kit','cafe'));
+    const disabledOption=new Option('Unavailable single option','unavailable'); disabledOption.disabled=true; grouped.add(disabledOption);
+    const disabledGroup=document.createElement('optgroup'); disabledGroup.label='Unavailable group'; disabledGroup.disabled=true; disabledGroup.append(new Option('Unavailable group item','blocked')); grouped.append(disabledGroup);
+    const wrapped=document.querySelector('#wrapped'), wrappedTrigger=document.querySelector('#wrapped-trigger'), wrappedMenu=document.querySelector('#wrapped-menu');
+    addOptions(wrapped,Array.from({length:25},(_,i)=>`Warehouse ${String(i+1).padStart(2,'0')}`));
+    wrapped.addEventListener('change',()=>{wrappedTrigger.textContent=`${wrapped.selectedOptions[0].text} ▾`;});
+    function toggleMenu(trigger,menu){ trigger.addEventListener('click',()=>{menu.hidden=!menu.hidden; trigger.setAttribute('aria-expanded',String(!menu.hidden));}); }
+    toggleMenu(wrappedTrigger,wrappedMenu);
+    Array.from(wrapped.options).filter(option=>option.value).forEach(option=>{
+      const button=document.createElement('button'); button.type='button'; button.setAttribute('role','option'); button.textContent=option.text;
+      button.addEventListener('click',()=>{wrapped.value=option.value;wrapped.dispatchEvent(new Event('change',{bubbles:true}));wrappedMenu.hidden=true;wrappedTrigger.setAttribute('aria-expanded','false');});wrappedMenu.append(button);
+    });
+    const customTrigger=document.querySelector('#custom-trigger'),customMenu=document.querySelector('#custom-menu');toggleMenu(customTrigger,customMenu);
+    for(let i=1;i<=25;i++){
+      const button=document.createElement('button');button.type='button';button.setAttribute('role','option');button.textContent=`Custom colour ${i}`;
+      button.addEventListener('click',()=>{customTrigger.textContent=`${button.textContent} ▾`;customMenu.hidden=true;customTrigger.setAttribute('aria-expanded','false');});customMenu.append(button);
+    }
+    addOptions(document.querySelector('#multi'),Array.from({length:25},(_,i)=>`Multi ${i+1}`));
+    addOptions(document.querySelector('#disabled-control'),Array.from({length:25},(_,i)=>`Disabled ${i+1}`));
+    document.querySelector('#add-dynamic').addEventListener('click',event=>{
+      if(document.querySelector('#dynamic'))return;
+      const label=document.createElement('label');label.htmlFor='dynamic';label.textContent='Part number';
+      const select=document.createElement('select');select.id='dynamic';addOptions(select,Array.from({length:1000},(_,i)=>`Part ZX-${String(i).padStart(4,'0')}`));
+      document.querySelector('#dynamic-container').append(label,select);event.target.disabled=true;
+    });
+    for (const select of [manufacturer,product,country,grouped,wrapped]) {
       for (const type of ['input','change']) select.addEventListener(type,()=>{
         const line=document.createElement('div');
         line.textContent=`${type}: ${select.name} = ${select.selectedOptions[0]?.text || '(none)'}`;
-        log.prepend(line);
+        log.prepend(line);while(log.children.length>30)log.lastChild.remove();
       });
     }
   </script>
+  <script src="demo-checks.js"></script>
 </body>
 </html>
