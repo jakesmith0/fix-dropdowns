@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fix Dropdowns — demo and install</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,sans-serif;color:#17212b;background:#f6f8fa}body{max-width:800px;margin:40px auto;padding:0 18px}h1{margin-bottom:4px}p{line-height:1.5}.card{background:white;border:1px solid #d9e1e8;border-radius:12px;padding:20px;margin:20px 0}.bookmarklet{display:inline-block;padding:12px 18px;background:#155eef;color:white;text-decoration:none;border-radius:8px;font-weight:700}.bookmarklet:focus,.bookmarklet:hover{background:#0045c0}label{display:block;font-weight:600;margin:16px 0 6px}select{display:block;width:100%;max-width:500px;padding:9px;border:1px solid #8e9ba5;border-radius:7px;background:white;font:inherit}code{background:#eef2f5;padding:2px 4px;border-radius:3px}#events{min-height:100px;max-height:180px;overflow:auto;background:#f1f5f8;padding:10px;border-radius:6px;font:12px/1.5 ui-monospace,monospace}small{color:#53616e}
+  </style>
+</head>
+<body>
+  <h1>Fix Dropdowns</h1>
+  <p>Search large dropdowns on any page with one bookmark. Everything runs in your browser, only when you click it.</p>
+  <div class="card">
+    <h2>Install</h2>
+    <p><strong>Desktop:</strong> show your bookmarks bar, then drag this button onto it:</p>
+    <p><a class="bookmarklet" href="{{BOOKMARKLET}}" draggable="true" title="Drag to your bookmarks bar">🔎 Fix Dropdowns</a></p>
+    <p>Then visit a page with a large native dropdown and click the bookmark. You can also <a href="{{BOOKMARKLET}}">try it on this page now</a>.</p>
+    <p><small>On iPad Safari, dragging to a bookmarks bar is awkward. See the README for manual setup. Some websites or browser policies can block bookmarklets.</small></p>
+  </div>
+  <div class="card">
+    <h2>Test form</h2>
+    <p>Search “solar roof pro”, “ja 440”, or “France”. Choose a manufacturer and the product list changes. The event log confirms the native form received input and change events.</p>
+    <label for="manufacturer">Manufacturer</label>
+    <select id="manufacturer" name="manufacturer"><option value="">Choose a manufacturer</option></select>
+    <label for="product">Product (depends on manufacturer)</label>
+    <select id="product" name="product"><option value="">Choose a manufacturer first</option></select>
+    <label for="country">Country</label>
+    <select id="country" name="country"><option value="">Choose a country</option></select>
+    <label for="small">Small dropdown (ignored by bookmarklet)</label>
+    <select id="small" name="small"><option>One</option><option>Two</option><option>Three</option></select>
+    <h3>Native event log</h3><div id="events" aria-live="polite"></div>
+  </div>
+  <p><small>Source: <a href="https://github.com/jakesmith0/fix-dropdowns">github.com/jakesmith0/fix-dropdowns</a>. No analytics, external scripts, or network calls from the bookmarklet.</small></p>
+  <script>
+    const manufacturers = ['Clenergy Technology Co Ltd','JA Solar Technology','Acme Solar','Bright Roof Systems',...Array.from({length:32},(_,i)=>`Example Manufacturer ${String(i+1).padStart(2,'0')}`)];
+    const countries = ['United Kingdom','France','Germany','Spain','Netherlands',...Array.from({length:55},(_,i)=>`Example Country ${String(i+1).padStart(2,'0')}`)];
+    const manufacturer = document.querySelector('#manufacturer');
+    const product = document.querySelector('#product');
+    const country = document.querySelector('#country');
+    const log = document.querySelector('#events');
+    function addOptions(select, values) { values.forEach((label,i)=>select.add(new Option(label,`item-${i+1}`))); }
+    function updateProducts() {
+      product.replaceChildren(new Option('Choose a product',''));
+      const selected = manufacturer.selectedIndex;
+      if (!selected) return;
+      const first = selected === 1 ? ['PV-ezRack SolarRoof Pro Pantile - PRO02','PV-ezRack SolarRoof Pro Universal - PRO04'] : selected === 2 ? ['JA Solar JAM54D41-440/LB','JA Solar JAM72D40-575/MB'] : [];
+      addOptions(product,[...first,...Array.from({length:55},(_,i)=>`${manufacturer.selectedOptions[0].text} Product ${String(i+1).padStart(2,'0')}`)]);
+    }
+    addOptions(manufacturer,manufacturers);
+    addOptions(country,countries);
+    manufacturer.addEventListener('change',updateProducts);
+    for (const select of [manufacturer,product,country]) {
+      for (const type of ['input','change']) select.addEventListener(type,()=>{
+        const line=document.createElement('div');
+        line.textContent=`${type}: ${select.name} = ${select.selectedOptions[0]?.text || '(none)'}`;
+        log.prepend(line);
+      });
+    }
+  </script>
+</body>
+</html>
