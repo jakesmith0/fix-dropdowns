@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
-const demo = pathToFileURL(resolve('index.html')).href;
+const demo = pathToFileURL(resolve('tests.html')).href;
 const overlay = page => page.locator('#fix-dropdowns-overlay');
 const search = page => overlay(page).locator('input');
 const picker = page => overlay(page).locator('select');
 async function open(page) {
   await page.goto(demo);
-  await page.getByRole('link', { name: 'try it on this page now' }).click();
+  await page.locator('#install').click();
   await expect(overlay(page)).toHaveCount(1);
 }
 async function field(page, name) {
